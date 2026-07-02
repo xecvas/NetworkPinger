@@ -1,0 +1,420 @@
+﻿<Window x:Class="Network_Pinger.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Network Pinger" Height="660" Width="1100"
+        Icon="assets/icon.ico"
+        WindowStartupLocation="CenterScreen"
+        KeyboardNavigation.TabNavigation="None"
+        Closing="Window_Closing"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="AppBgBrush" Color="#F0F2F5"/>
+        <SolidColorBrush x:Key="CardBgBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#212529"/>
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#495057"/>
+        <SolidColorBrush x:Key="BorderDefaultBrush" Color="#DEE2E6"/>
+        <SolidColorBrush x:Key="ControlBgBrush" Color="#E9ECEF"/>
+
+        <Style TargetType="Button" x:Key="ModernButton">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6"/>
+                            <Border x:Name="hoverOverlay" Background="White" Opacity="0" CornerRadius="6" IsHitTestVisible="False"/>
+                            <ContentPresenter Focusable="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="hoverOverlay" Property="Opacity" Value="0.15"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource ControlBgBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Button" x:Key="IconButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="34"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource ControlBgBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Button" x:Key="ColorPickerButton">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="12" BorderThickness="2" BorderBrush="#CED4DA"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Border" x:Key="CardContainer">
+            <Setter Property="Background" Value="{DynamicResource CardBgBrush}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderDefaultBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="RowBackground" Value="Transparent"/>
+            <Setter Property="AlternatingRowBackground" Value="#F8F9FA"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="{DynamicResource ControlBgBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="Padding" Value="10,12"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderDefaultBrush}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="DataGridCell">
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ThemeToggleSwitchStyle" TargetType="ToggleButton">
+            <Setter Property="Width" Value="52"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Border x:Name="Track" 
+                            Background="{DynamicResource AppBgBrush}" 
+                            CornerRadius="14" 
+                            BorderBrush="{DynamicResource BorderDefaultBrush}" 
+                            BorderThickness="1.5"/>
+
+                            <Border x:Name="Knob" 
+                            Background="#2D2D2D" 
+                            Width="22" 
+                            Height="22" 
+                            CornerRadius="11" 
+                            HorizontalAlignment="Left" 
+                            Margin="3">
+                                <Grid>
+                                    <Path x:Name="SunIcon" 
+                                  Data="M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5S14.76,7,12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1S11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L18.36,16.95z M7.05,18.36c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41l-1.06-1.06c-0.39-0.39-1.03-0.39-1.41,0L7.05,18.36z M16.95,5.99c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41l-1.06-1.06c-0.39-0.39-1.03-0.39-1.41,0s-0.39,1.03,0,1.41L16.95,5.99z" 
+                                  Fill="#FFB900" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <Path x:Name="MoonIcon" 
+                                  Data="M9.37,5.51C9.19,6.13,9.1,6.79,9.1,7.47c0,3.76,3.05,6.81,6.81,6.81c0.68,0,1.34-0.09,1.96-0.27c-1.12,1.71-3.04,2.84-5.23,2.84c-3.48,0-6.31-2.83-6.31-6.31C6.34,8.35,7.56,6.51,9.37,5.51z" 
+                                  Fill="#546E7A" Stretch="Uniform" Width="13" Height="13" Opacity="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Knob" Property="HorizontalAlignment" Value="Right"/>
+                                <Setter TargetName="Knob" Property="Background" Value="White"/>
+                                <Setter TargetName="SunIcon" Property="Opacity" Value="0"/>
+                                <Setter TargetName="MoonIcon" Property="Opacity" Value="1"/>
+                                <Setter TargetName="Track" Property="BorderBrush" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ModernThumbStyle" TargetType="Thumb">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Border x:Name="ThumbBorder" CornerRadius="6" Background="DarkGray" Margin="1"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ThumbBorder" Property="Background" Value="#2BDCFF"/>
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="True">
+                                <Setter TargetName="ThumbBorder" Property="Background" Value="#17A2B8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Height" Value="8"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ScrollBar">
+                                <Grid Background="Transparent">
+                                    <Track x:Name="PART_Track">
+                                        <Track.Thumb>
+                                            <Thumb Style="{StaticResource ModernThumbStyle}" Margin="0"/>
+                                        </Track.Thumb>
+                                    </Track>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="Orientation" Value="Vertical">
+                    <Setter Property="Width" Value="6"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ScrollBar">
+                                <Grid Background="Transparent">
+                                    <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                        <Track.Thumb>
+                                            <Thumb Style="{StaticResource ModernThumbStyle}" Margin="0"/>
+                                        </Track.Thumb>
+                                    </Track>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="{DynamicResource AppBgBrush}" BorderBrush="{DynamicResource BorderDefaultBrush}" BorderThickness="1" CornerRadius="10">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="45"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0">
+                    <Image Source="assets/icon.ico" Width="20" Height="20" Margin="0,0,10,0"/>
+                    <TextBlock Text="Network Pinger" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,15,0">
+                    <ToggleButton x:Name="themeToggle" Style="{StaticResource ThemeToggleSwitchStyle}" Click="themeToggle_Click" Margin="0,0,10,0"/>
+                    <Button Name="btnClear" ToolTip="Clear Data" Style="{StaticResource IconButton}" Click="btnClear_Click">
+                        <Image Source="assets/refresh.png" Width="18" Height="18" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Button>
+                    <Button Name="btnClose" Content="✕" ToolTip="Close Application" Style="{StaticResource IconButton}" Click="btnClose_Click" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="20" FontWeight="Bold"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="20,0,20,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="15"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Name="panelSettings" VerticalAlignment="Top">
+
+                        <Border Style="{StaticResource CardContainer}" Margin="0,0,0,15">
+                            <StackPanel>
+                                <TextBlock Text="🌐 Target &amp; Configuration" FontWeight="Bold" FontSize="15" Foreground="#0D6EFD" Margin="0,0,0,15"/>
+
+                                <Label Content="Target Host / IP Address:" FontWeight="SemiBold" Padding="0,0,0,5" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                <TextBox Name="txtTarget" Text="8.8.8.8" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,0,15"/>
+
+                                <Grid Margin="0,0,0,15">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <Label Content="Timeout (ms):" FontWeight="SemiBold" Padding="0,0,0,5" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        <TextBox Name="txtTimeout" Text="4000" Height="36" Padding="10,0" VerticalContentAlignment="Center" MouseWheel="NumericTextBox_MouseWheel" PreviewKeyDown="NumericTextBox_PreviewKeyDown" ToolTip="Scroll to adjust"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <Label Content="Buffer (bytes):" FontWeight="SemiBold" Padding="0,0,0,5" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        <TextBox Name="txtBuffer" Text="32" Height="36" Padding="10,0" VerticalContentAlignment="Center" MouseWheel="NumericTextBox_MouseWheel" PreviewKeyDown="NumericTextBox_PreviewKeyDown" ToolTip="Scroll to adjust"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,15">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <Label Content="Ping Count:" FontWeight="SemiBold" Padding="0,0,0,5" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        <TextBox Name="txtCount" Text="0" Height="36" Padding="10,0" VerticalContentAlignment="Center" MouseWheel="NumericTextBox_MouseWheel" PreviewKeyDown="NumericTextBox_PreviewKeyDown" ToolTip="Scroll to adjust"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <Label Content="Delay (Seconds):" FontWeight="SemiBold" Padding="0,0,0,5" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        <TextBox Name="txtDelay" Text="1" Height="36" Padding="10,0" VerticalContentAlignment="Center" MouseWheel="NumericTextBox_MouseWheel" PreviewKeyDown="NumericTextBox_PreviewKeyDown" ToolTip="Scroll to adjust"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox Name="chkDontFragment" Content="Don't Fragment (-f)" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                                    <CheckBox Name="chkSound" Content="Play Sound on RTO" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardContainer}">
+                            <StackPanel>
+                                <TextBlock Text="🎨 Color Configuration" FontWeight="Bold" FontSize="15" Foreground="#0D6EFD" Margin="0,0,0,15"/>
+
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Grid.Row="0" Grid.Column="0" Content="Normal Latency" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBox Name="txtNormalMs" Text="100" Width="60" Height="28" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" MouseWheel="NumericTextBox_MouseWheel" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Foreground="{Binding Background, ElementName=btnNormalColor}"/>
+                                        <Label Content="ms" Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,0,0,0"/>
+                                    </StackPanel>
+                                    <Button Name="btnNormalColor" Grid.Row="0" Grid.Column="2" Style="{StaticResource ColorPickerButton}" Background="#198754" Width="24" Height="24" Margin="0,0,0,10" Click="ColorPicker_Click"/>
+
+                                    <Label Grid.Row="1" Grid.Column="0" Content="Warning Latency" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBox Name="txtWarningMs" Text="200" Width="60" Height="28" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" MouseWheel="NumericTextBox_MouseWheel" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Foreground="{Binding Background, ElementName=btnWarningColor}"/>
+                                        <Label Content="ms" Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,0,0,0"/>
+                                    </StackPanel>
+                                    <Button Name="btnWarningColor" Grid.Row="1" Grid.Column="2" Style="{StaticResource ColorPickerButton}" Background="#FFC107" Width="24" Height="24" Margin="0,0,0,10" Click="ColorPicker_Click"/>
+
+                                    <Label Grid.Row="2" Grid.Column="0" Content="Request Time Out (RTO)" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBox Name="txtRtoMs" Text="500" Width="60" Height="28" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" MouseWheel="NumericTextBox_MouseWheel" PreviewKeyDown="NumericTextBox_PreviewKeyDown" Foreground="{Binding Background, ElementName=btnRtoColor}"/>
+                                        <Label Content="ms" Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,0,0,0"/>
+                                    </StackPanel>
+                                    <Button Name="btnRtoColor" Grid.Row="2" Grid.Column="2" Style="{StaticResource ColorPickerButton}" Background="#DC3545" Width="24" Height="24" Click="ColorPicker_Click"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <Border Grid.Row="1" Style="{StaticResource CardContainer}" VerticalAlignment="Bottom">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Name="btnStop" Grid.Column="0" Content="STOP" Style="{StaticResource ModernButton}" Background="#DC3545" Click="btnStop_Click" IsEnabled="False"/>
+                            <Button Name="btnStart" Grid.Column="2" Content="START" Style="{StaticResource ModernButton}" Background="#198754" Click="btnStart_Click"/>
+                            <Button x:Name="btnExport"  Grid.Column="4" Content="EXPORT" Style="{StaticResource ModernButton}" Background="#0D6EFD" Click="btnExport_Click"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Border Grid.Column="2" Style="{StaticResource CardContainer}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="0,0,0,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="📟 Diagnostic Output Table" Grid.Column="0" FontWeight="Bold" FontSize="15" Foreground="#0D6EFD"/>
+                            <TextBlock Name="txtAverage" Text="Average: 0 ms" Grid.Column="1" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,10,0" Visibility="Collapsed"/>
+                        </Grid>
+
+                        <DataGrid Name="dgOutput" Grid.Row="1">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Timestamp" Binding="{Binding TimeStamp}" Width="1.5*"/>
+                                <DataGridTextColumn Header="Target IP" Binding="{Binding IPAddress}" Width="2.5*"/>
+                                <DataGridTextColumn Header="Bytes" Binding="{Binding Bytes}" Width="1*"/>
+                                <DataGridTextColumn Header="Time(ms)" Binding="{Binding Latency}" Width="1.5*"/>
+                                <DataGridTextColumn Header="TTL" Binding="{Binding TTL}" Width="1*"/>
+                                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="2*"/>
+                            </DataGrid.Columns>
+
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <Setter Property="Foreground" Value="{Binding RowColor}"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsInfoRow}" Value="True">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="DataGridRow">
+                                                        <Border Background="{Binding RowColor}" Margin="0,2,0,2" CornerRadius="4" Padding="8">
+                                                            <TextBlock Text="{Binding Status}" 
+                                           Foreground="White" 
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"
+                                           FontWeight="SemiBold"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.RowStyle>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

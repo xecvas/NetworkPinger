@@ -1,0 +1,29 @@
+# Build results
+bin/
+obj/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# NuGet packages
+packages/
+
+# Logs
+*.log
+
+# Generated files
+*.cache
+
+# Publish output
+publish/
+
+# ReSharper
+_ReSharper*/
+*.DotSettings.user
